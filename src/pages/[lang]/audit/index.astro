@@ -1,6 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import { AUDIT_EMAIL } from '../../../consts';
+import { AUDIT_EMAIL, WEB3FORMS_KEY } from '../../../consts';
 
 export function getStaticPaths() {
   return [{ params: { lang: 'zh-hant' } }, { params: { lang: 'zh-hans' } }, { params: { lang: 'en' } }];
@@ -86,8 +86,9 @@ const T = {
 }[lang];
 
 const alternates = { 'zh-hant': '/zh-hant/audit/', 'zh-hans': '/zh-hans/audit/', en: '/en/audit/' };
-const action = `https://formsubmit.co/${AUDIT_EMAIL}`;
-const nextUrl = new URL(`/${lang}/audit/thanks/`, Astro.site).toString();
+// Web3Forms：無帳號表單後端（formsubmit.co 在部分網路 DNS 被擋，已換掉）
+const action = 'https://api.web3forms.com/submit';
+const thanksPath = `/${lang}/audit/thanks/`;
 const BC = {
   'zh-hant': { home: '首頁' }, 'zh-hans': { home: '首页' }, en: { home: 'Home' },
 }[lang];
@@ -111,13 +112,13 @@ const breadcrumbs = [
     </div>
   </div>
 
-  <form class="audit-form" action={action} method="POST">
-    <input type="hidden" name="_subject" value={T.subject} />
-    <input type="hidden" name="_captcha" value="false" />
-    <input type="hidden" name="_template" value="table" />
-    <input type="hidden" name="_next" value={nextUrl} />
-    <!-- 蜜罐：機器人才會填，Formsubmit 會擋掉 -->
-    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+  <form class="audit-form" action={action} method="POST"
+        data-thanks={thanksPath} data-fallback={AUDIT_EMAIL} data-subject={T.subject}>
+    <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
+    <input type="hidden" name="subject" value={T.subject} />
+    <input type="hidden" name="from_name" value="SemanticLab Audit Form" />
+    <!-- 蜜罐：機器人才會填，Web3Forms 會擋掉 -->
+    <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
 
     <label>{T.fName}<input type="text" name="name" autocomplete="name" /></label>
     <label>{T.fEmail}<input type="email" name="email" required autocomplete="email" /></label>
@@ -128,6 +129,33 @@ const breadcrumbs = [
     <p class="form-note">{T.note}</p>
   </form>
 </Base>
+
+<script>
+  // JS 送出＋雙保險：端點失敗（DNS 被擋/斷線）時自動退回 mailto，不漏任何一筆申請
+  const form = document.querySelector('form.audit-form') as HTMLFormElement;
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button')!;
+    const orig = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '…';
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || 'submit failed');
+      location.href = form.dataset.thanks!;
+    } catch {
+      // 備援：開啟使用者的郵件程式，內容已預填
+      const body = ['name', 'email', 'website', 'market', 'message']
+        .map((k) => `${k}: ${data.get(k) || ''}`)
+        .join('\n');
+      location.href = `mailto:${form.dataset.fallback}?subject=${encodeURIComponent(form.dataset.subject!)}&body=${encodeURIComponent(body)}`;
+      btn.disabled = false;
+      btn.textContent = orig;
+    }
+  });
+</script>
 
 <style>
   .recap { display: flex; gap: 16px; flex-wrap: wrap; margin: 22px 0 30px; }
