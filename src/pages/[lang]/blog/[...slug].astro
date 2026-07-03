@@ -1,0 +1,91 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const now = new Date();
+  // 日期閘門：發布日 <= 今天才建置頁面 → 配合每日 cron 自動滴灌上線
+  const posts = await getCollection('blog', (p) => !p.data.draft && p.data.date_published <= now);
+  return posts.map((post) => {
+    const [lang, ...rest] = post.id.split('/');
+    return { params: { lang, slug: rest.join('/') }, props: { post } };
+  });
+}
+const { post } = Astro.props;
+const lang = Astro.params.lang as 'zh-hant' | 'zh-hans' | 'en';
+const { Content } = await render(post);
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+
+// hreflang：本文 + frontmatter.translations 指到的其他語言版本
+const selfPath = `/${lang}/blog/${post.id.split('/').slice(1).join('/')}/`;
+const alternates: Record<string, string> = { [lang]: selfPath };
+if (post.data.translations) {
+  for (const [l, slug] of Object.entries(post.data.translations)) {
+    alternates[l] = `/${l}/blog/${slug}/`;
+  }
+}
+
+// Article schema
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  author: { '@type': 'Organization', name: post.data.author },
+  publisher: { '@type': 'Organization', name: 'SemanticLab' },
+  datePublished: post.data.date_published.toISOString(),
+  dateModified: (post.data.date_updated ?? post.data.date_published).toISOString(),
+  inLanguage: lang === 'en' ? 'en' : lang === 'zh-hans' ? 'zh-Hans' : 'zh-Hant',
+  mainEntityOfPage: new URL(selfPath, Astro.site).toString(),
+};
+
+// 從內文「**Q1：...**\n答案段」自動抽 FAQPage schema（產線模板固定此格式）
+const faqPairs: { q: string; a: string }[] = [];
+const faqRe = /\*\*Q\d+[：:]\s*([^*]+?)\*\*\s*\n([^\n*][^\n]*(?:\n(?![*\n#])[^\n]+)*)/g;
+let m;
+while ((m = faqRe.exec(post.body ?? '')) !== null) {
+  faqPairs.push({ q: m[1].trim(), a: m[2].trim().replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') });
+}
+const faqSchema =
+  faqPairs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqPairs.map((f) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a },
+        })),
+      }
+    : null;
+
+const schemas = faqSchema ? [articleSchema, faqSchema] : [articleSchema];
+
+const BC = {
+  'zh-hant': { home: '首頁', blog: '部落格' },
+  'zh-hans': { home: '首页', blog: '博客' },
+  en: { home: 'Home', blog: 'Blog' },
+}[lang];
+const breadcrumbs = [
+  { name: BC.home, url: `/${lang}/` },
+  { name: BC.blog, url: `/${lang}/blog/` },
+  { name: post.data.title, url: selfPath },
+];
+---
+<Base
+  title={post.data.title}
+  description={post.data.description ?? ''}
+  lang={lang}
+  alternates={alternates}
+  schemas={schemas}
+  breadcrumbs={breadcrumbs}
+>
+  <article>
+    <p class="post-meta">
+      {post.data.author} · {fmt(post.data.date_published)}
+      {post.data.date_updated && ` · 更新 ${fmt(post.data.date_updated)}`}
+      {post.data.cluster && ` · ${post.data.cluster}`}
+    </p>
+    <Content />
+  </article>
+</Base>

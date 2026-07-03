@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hreflang 產生器 · hreflang Generator</title>
+<style>
+  :root{--bg:#0e1116;--panel:#171b22;--panel2:#1f242d;--line:#2a313c;--txt:#e6edf3;
+    --dim:#9aa4b2;--accent:#4f8cff;--good:#3fb950;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);padding:24px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Noto Sans SC",Roboto,Arial,sans-serif;line-height:1.6}
+  .wrap{max-width:820px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  h1{font-size:22px;margin:0}
+  .sub{color:var(--dim);font-size:13px;margin:2px 0 20px}
+  .langs{display:flex;gap:6px}
+  .langs button{background:var(--panel2);color:var(--dim);border:1px solid var(--line);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px}
+  .langs button.active{color:#fff;border-color:var(--accent);background:#20315a}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+  label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px}
+  input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px;font-size:14px;font-family:inherit}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:220px}
+  .locales{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .loc{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .loc input[type=checkbox]{width:auto}
+  .loc code{color:var(--accent);font-size:13px;min-width:70px}
+  .loc .path{flex:1}
+  .loc .path input{padding:8px 10px;font-size:13px}
+  .xdef{color:var(--dim);font-size:12px}
+  .btn{background:var(--accent);color:#fff;border:none;padding:12px 22px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px}
+  .btn:hover{filter:brightness(1.08)}
+  pre{background:#0b0e13;border:1px solid var(--line);border-radius:10px;padding:16px;overflow-x:auto;font-size:13px;color:#cdd6e0}
+  .copy{background:var(--panel2);color:var(--txt);border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;margin-top:10px}
+  .out{display:none}
+  .foot{color:var(--dim);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="t_title">hreflang 產生器</h1>
+    <div class="langs">
+      <button data-l="zh-Hant" class="active">繁中</button>
+      <button data-l="zh-Hans">简中</button>
+      <button data-l="en">EN</button>
+    </div>
+  </header>
+  <p class="sub" id="t_sub">輸入網域與頁面路徑，一鍵產生正確的 hreflang 標籤（含 x-default），避免繁簡自我蠶食。</p>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label id="t_lbl_domain">網域（含 https://）</label>
+        <input id="domain" type="text" value="https://example.com">
+      </div>
+      <div>
+        <label id="t_lbl_slug">頁面路徑（不含語言目錄）</label>
+        <input id="slug" type="text" value="geo-guide/">
+      </div>
+    </div>
+    <label style="margin-top:14px" id="t_lbl_locales">語言版本（勾選要包含的，可改子目錄與 x-default）</label>
+    <div class="locales" id="locales"></div>
+    <button class="btn" id="t_btn" onclick="gen()">產生標籤</button>
+  </div>
+
+  <div class="card out" id="out">
+    <pre id="code"></pre>
+    <button class="copy" id="t_copy" onclick="copyCode()">複製</button>
+  </div>
+  <p class="foot" id="t_foot"></p>
+</div>
+
+<script>
+const LOCALES=[
+  {code:"zh-Hant", dir:"zh-hant", label:{"zh-Hant":"繁體中文","zh-Hans":"繁体中文","en":"Traditional Chinese"}, on:true},
+  {code:"zh-Hans", dir:"zh-hans", label:{"zh-Hant":"簡體中文","zh-Hans":"简体中文","en":"Simplified Chinese"}, on:true},
+  {code:"en",      dir:"en",      label:{"zh-Hant":"英文","zh-Hans":"英文","en":"English"}, on:true}
+];
+const I18N={
+  "zh-Hant":{title:"hreflang 產生器",sub:"輸入網域與頁面路徑，一鍵產生正確的 hreflang 標籤（含 x-default），避免繁簡自我蠶食。",
+    domain:"網域（含 https://）",slug:"頁面路徑（不含語言目錄）",locales:"語言版本（勾選要包含的，可改子目錄與 x-default）",
+    btn:"產生標籤",copy:"複製",copied:"已複製！",xdef:"x-default",
+    foot:"每個頁面都要列出所有語言版本＋自我參照＋x-default。放進每頁 <head>，並在 GSC → 國際定位 驗證。"},
+  "zh-Hans":{title:"hreflang 生成器",sub:"输入域名与页面路径，一键生成正确的 hreflang 标签（含 x-default），避免繁简自我蚕食。",
+    domain:"域名（含 https://）",slug:"页面路径（不含语言目录）",locales:"语言版本（勾选要包含的，可改子目录与 x-default）",
+    btn:"生成标签",copy:"复制",copied:"已复制！",xdef:"x-default",
+    foot:"每个页面都要列出所有语言版本＋自我引用＋x-default。放进每页 <head>，并在 GSC → 国际定位 验证。"},
+  "en":{title:"hreflang Generator",sub:"Enter domain and page path to generate correct hreflang tags (incl. x-default) and avoid zh-Hant/zh-Hans cannibalization.",
+    domain:"Domain (with https://)",slug:"Page path (without language folder)",locales:"Language versions (tick to include; edit folder & x-default)",
+    btn:"Generate tags",copy:"Copy",copied:"Copied!",xdef:"x-default",
+    foot:"Every page must list all language versions + self-reference + x-default. Put in each page's <head> and validate in GSC → International Targeting."}
+};
+let LANG="zh-Hant", XDEF="en";
+
+document.querySelectorAll(".langs button").forEach(b=>{
+  b.onclick=()=>{LANG=b.dataset.l;document.querySelectorAll(".langs button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.documentElement.lang=LANG;render();applyLang();};
+});
+function applyLang(){
+  const t=I18N[LANG];
+  t_title.textContent=t.title; t_sub.textContent=t.sub;
+  t_lbl_domain.textContent=t.domain; t_lbl_slug.textContent=t.slug; t_lbl_locales.textContent=t.locales;
+  t_btn.textContent=t.btn; t_copy.textContent=t.copy; t_foot.textContent=t.foot;
+}
+function render(){
+  const box=document.getElementById("locales"); box.innerHTML="";
+  LOCALES.forEach((L,i)=>{
+    const el=document.createElement("div"); el.className="loc";
+    el.innerHTML=`<input type="checkbox" ${L.on?"checked":""} onchange="LOCALES[${i}].on=this.checked">
+      <code>${L.code}</code>
+      <span style="color:var(--dim);font-size:13px;min-width:90px">${L.label[LANG]}</span>
+      <span class="path">/<input value="${L.dir}" onchange="LOCALES[${i}].dir=this.value.replace(/^\\/+|\\/+$/g,'')">/</span>
+      <label class="xdef"><input type="radio" name="xdef" ${XDEF===L.code?"checked":""} onchange="XDEF='${L.code}'"> ${I18N[LANG].xdef}</label>`;
+    box.appendChild(el);
+  });
+}
+function gen(){
+  const domain=document.getElementById("domain").value.trim().replace(/\/+$/,"");
+  const slug=document.getElementById("slug").value.trim().replace(/^\/+/,"");
+  const active=LOCALES.filter(L=>L.on);
+  let lines=[];
+  active.forEach(L=>{
+    lines.push(`<link rel="alternate" hreflang="${L.code}" href="${domain}/${L.dir}/${slug}" />`);
+  });
+  const xd=LOCALES.find(L=>L.code===XDEF)||active[0];
+  if(xd) lines.push(`<link rel="alternate" hreflang="x-default" href="${domain}/${xd.dir}/${slug}" />`);
+  document.getElementById("code").textContent=lines.join("\n");
+  document.getElementById("out").style.display="block";
+}
+function copyCode(){
+  const txt=document.getElementById("code").textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.getElementById("t_copy"); const o=b.textContent;
+    b.textContent=I18N[LANG].copied; setTimeout(()=>b.textContent=o,1500);
+  });
+}
+render(); applyLang();
+</script>
+</body>
+</html>

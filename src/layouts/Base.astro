@@ -1,0 +1,160 @@
+---
+// 全站基礎版型：SEO head（canonical、hreflang、OG、schema）＋簡潔樣式
+interface Props {
+  title: string;
+  description: string;
+  lang: 'zh-hant' | 'zh-hans' | 'en';
+  /** 各語言版本的路徑（不含網域），有翻譯才傳；一定包含自己 */
+  alternates?: Partial<Record<'zh-hant' | 'zh-hans' | 'en', string>>;
+  /** JSON-LD 物件（Article、FAQPage…），會逐一輸出 */
+  schemas?: object[];
+  /** 麵包屑（不含網域路徑），有傳才輸出 BreadcrumbList schema */
+  breadcrumbs?: { name: string; url: string }[];
+}
+const { title, description, lang, alternates, schemas = [], breadcrumbs } = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(Astro.url.pathname, site);
+const HREFLANG: Record<string, string> = { 'zh-hant': 'zh-Hant', 'zh-hans': 'zh-Hans', en: 'en' };
+const HTML_LANG: Record<string, string> = { 'zh-hant': 'zh-Hant', 'zh-hans': 'zh-Hans', en: 'en' };
+const OG_LOCALE: Record<string, string> = { 'zh-hant': 'zh_TW', 'zh-hans': 'zh_CN', en: 'en_US' };
+// x-default 指向英文版；沒有英文版就指自己（策略見 multilingual-geo.md）
+const xDefaultPath = alternates?.en ?? Astro.url.pathname;
+const ogImage = new URL('/og.png', site);
+const rssHref = `/${lang}/rss.xml`;
+
+// 全站固定：Organization + WebSite 實體（GEO 實體清晰度、E-E-A-T）
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SemanticLab 語意實驗室',
+  url: site.toString(),
+  logo: ogImage.toString(),
+  description: 'SEO / GEO 實戰內容與工具，教你讓內容被 Google 排名、被 AI 引用。',
+};
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'SemanticLab',
+  url: site.toString(),
+  inLanguage: HREFLANG[lang],
+};
+const breadcrumbSchema = breadcrumbs && breadcrumbs.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbs.map((b, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: b.name,
+        item: new URL(b.url, site).toString(),
+      })),
+    }
+  : null;
+const allSchemas = [orgSchema, websiteSchema, ...(breadcrumbSchema ? [breadcrumbSchema] : []), ...schemas];
+const NAV: Record<string, { home: string; blog: string; geo: string }> = {
+  'zh-hant': { home: '首頁', blog: '部落格', geo: 'GEO 檢測' },
+  'zh-hans': { home: '首页', blog: '博客', geo: 'GEO 检测' },
+  en: { home: 'Home', blog: 'Blog', geo: 'GEO Checker' },
+};
+const nav = NAV[lang];
+---
+<!doctype html>
+<html lang={HTML_LANG[lang]}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {alternates && Object.entries(alternates).map(([l, path]) => (
+      <link rel="alternate" hreflang={HREFLANG[l]} href={new URL(path, site)} />
+    ))}
+    {alternates && <link rel="alternate" hreflang="x-default" href={new URL(xDefaultPath, site)} />}
+    <meta property="og:site_name" content="SemanticLab" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={OG_LOCALE[lang]} />
+    {alternates && Object.keys(alternates).filter((l) => l !== lang).map((l) => (
+      <meta property="og:locale:alternate" content={OG_LOCALE[l]} />
+    ))}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="SemanticLab RSS" href={rssHref} />
+    {allSchemas.map((s) => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href={`/${lang}/`}>SemanticLab</a>
+      <nav>
+        <a href={`/${lang}/`}>{nav.home}</a>
+        <a href={`/${lang}/blog/`}>{nav.blog}</a>
+        <a href={`/${lang}/geo/`}>{nav.geo}</a>
+      </nav>
+      <div class="lang-switch">
+        {(['zh-hant', 'zh-hans', 'en'] as const).map((l) => (
+          <a href={alternates?.[l] ?? `/${l}/`} class={l === lang ? 'active' : ''}>
+            {l === 'zh-hant' ? '繁' : l === 'zh-hans' ? '简' : 'EN'}
+          </a>
+        ))}
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer class="site-footer">
+      <p>© 2026 SemanticLab · <a href={`/${lang}/blog/`}>{nav.blog}</a> · <a href={`/${lang}/geo/`}>{nav.geo}</a></p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --bg: #0e1116; --panel: #171b22; --line: #2a313c; --txt: #e6edf3;
+    --dim: #9aa4b2; --accent: #4f8cff; --maxw: 780px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--txt); line-height: 1.75;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', 'Noto Sans SC', Roboto, sans-serif;
+  }
+  .site-header {
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    max-width: var(--maxw); margin: 0 auto; padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { font-weight: 800; color: var(--txt); text-decoration: none; font-size: 18px; }
+  .site-header nav { display: flex; gap: 16px; flex: 1; }
+  .site-header nav a { color: var(--dim); text-decoration: none; font-size: 14px; }
+  .site-header nav a:hover { color: var(--txt); }
+  .lang-switch { display: flex; gap: 6px; }
+  .lang-switch a {
+    color: var(--dim); text-decoration: none; font-size: 12px;
+    border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px;
+  }
+  .lang-switch a.active { color: #fff; border-color: var(--accent); }
+  main { max-width: var(--maxw); margin: 0 auto; padding: 32px 20px 64px; }
+  main a { color: var(--accent); }
+  h1 { font-size: 30px; line-height: 1.3; }
+  h2 { font-size: 22px; margin-top: 40px; border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 14px; display: block; overflow-x: auto; }
+  th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; }
+  th { background: var(--panel); }
+  blockquote { border-left: 3px solid var(--accent); margin: 16px 0; padding: 4px 16px; color: var(--dim); background: var(--panel); }
+  code { background: var(--panel); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+  .site-footer { border-top: 1px solid var(--line); margin-top: 40px; }
+  .site-footer p { max-width: var(--maxw); margin: 0 auto; padding: 20px; color: var(--dim); font-size: 13px; }
+  .post-meta { color: var(--dim); font-size: 13px; margin-bottom: 24px; }
+  .card-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .card-list li { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+  .card-list a { text-decoration: none; font-weight: 600; font-size: 17px; }
+  .card-list p { margin: 6px 0 0; color: var(--dim); font-size: 14px; }
+  .tool-frame { width: 100%; min-height: 900px; border: 1px solid var(--line); border-radius: 12px; background: #0e1116; }
+</style>

@@ -1,0 +1,165 @@
+---
+import Base from '../../../layouts/Base.astro';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'zh-hant' } }, { params: { lang: 'zh-hans' } }, { params: { lang: 'en' } }];
+}
+const lang = Astro.params.lang as 'zh-hant' | 'zh-hans' | 'en';
+
+// 諮詢 CTA 的聯絡方式：之後換成正式信箱或表單連結（Tally/Google Form）只改這兩行
+const CONTACT_EMAIL = 'contact@semanticlab.example'; // TODO: 換成真實信箱
+const FORM_URL = ''; // 若填入表單網址（如 https://tally.so/r/xxxx），按鈕會優先用表單
+
+// Boss 頁 B1：群集精簡總整理 + 內嵌功能工具（護城河）
+const T = {
+  'zh-hant': {
+    title: 'GEO 就緒度檢測器 — 你的內容夠格被 AI 引用嗎？',
+    desc: '免費 GEO 檢測工具：貼上文章，30 秒拿到 0–100 分與九項訊號的修正建議。附 GEO 方法論總整理。',
+    h1: 'GEO 就緒度檢測器',
+    lead: 'GEO（生成式引擎優化）的目標，是讓 ChatGPT、Perplexity、Google AI Overview 在回答時引用你。這個免費工具用九個可驗證的訊號替你的文章打分，並告訴你具體要改哪裡。',
+    how: '評分方法（也是 GEO 的九個核心訊號）',
+    signals: [
+      '答案優先開頭：前 40–80 字給出自包含結論',
+      '可引用數據：數字、百分比、日期、價格',
+      '結構與標題：清楚的 H2/H3 階層',
+      '問題／FAQ：貼近使用者與 AI 的提問方式',
+      '清單／表格：利於 AI 摘要與引用',
+      '內容深度：把單一意圖完整答完',
+      '實體清晰度：品牌／作者明確可歸屬',
+      '來源／連結：可信引用與內鏈',
+      '時效性：明確的發布／更新日期',
+    ],
+    read: '延伸閱讀',
+    ctaTitle: '想要專人幫你做 GEO／SEO 健檢？',
+    ctaDesc: '把檢測器的分數變成實際的成長：我們提供一次性的網站健檢，指出你最該先修的 30 個頁面與最快能贏的關鍵字機會。',
+    ctaPoints: ['內容負債盤點（90 天 0 點擊頁面）', 'GEO 就緒度全站掃描與修正優先序', '語意集群與內鏈架構建議'],
+    ctaBtn: '預約免費 15 分鐘諮詢',
+    ctaNote: '目前為早期優惠階段，名額有限；來信請附上你的網站網址。',
+  },
+  'zh-hans': {
+    title: 'GEO 就绪度检测器 — 你的内容够格被 AI 引用吗？',
+    desc: '免费 GEO 检测工具：粘贴文章，30 秒拿到 0–100 分与九项信号的修改建议。附 GEO 方法论总整理。',
+    h1: 'GEO 就绪度检测器',
+    lead: 'GEO（生成式引擎优化）的目标，是让 ChatGPT、Perplexity、Google AI Overview 在回答时引用你。这个免费工具用九个可验证的信号为你的文章打分，并告诉你具体要改哪里。',
+    how: '评分方法（也是 GEO 的九个核心信号）',
+    signals: [
+      '答案优先开头：前 40–80 字给出自包含结论',
+      '可引用数据：数字、百分比、日期、价格',
+      '结构与标题：清楚的 H2/H3 层级',
+      '问题／FAQ：贴近用户与 AI 的提问方式',
+      '清单／表格：利于 AI 摘要与引用',
+      '内容深度：把单一意图完整答完',
+      '实体清晰度：品牌／作者明确可归属',
+      '来源／链接：可信引用与内链',
+      '时效性：明确的发布／更新日期',
+    ],
+    read: '延伸阅读',
+    ctaTitle: '想要专人帮你做 GEO／SEO 健检？',
+    ctaDesc: '把检测器的分数变成实际的增长：我们提供一次性的网站健检，指出你最该先修的 30 个页面与最快能赢的关键词机会。',
+    ctaPoints: ['内容负债盘点（90 天 0 点击页面）', 'GEO 就绪度全站扫描与修改优先级', '语义集群与内链架构建议'],
+    ctaBtn: '预约免费 15 分钟咨询',
+    ctaNote: '目前为早期优惠阶段，名额有限；来信请附上你的网站网址。',
+  },
+  en: {
+    title: 'GEO Readiness Checker — Is your content citable by AI?',
+    desc: 'Free GEO tool: paste an article, get a 0–100 score across nine verifiable signals with specific fixes. Includes the GEO methodology.',
+    h1: 'GEO Readiness Checker',
+    lead: 'GEO (Generative Engine Optimization) is about getting cited by ChatGPT, Perplexity, and Google AI Overview. This free tool scores your article on nine verifiable signals and tells you exactly what to fix.',
+    how: 'How scoring works (the nine core GEO signals)',
+    signals: [
+      'Answer-first opening: a self-contained conclusion in the first 40–80 words',
+      'Quotable data: numbers, percentages, dates, prices',
+      'Structure: clear H2/H3 hierarchy',
+      'Questions / FAQ: matching how users and AI ask',
+      'Lists / tables: easy for AI to summarize and cite',
+      'Depth: fully answer one intent',
+      'Entity clarity: attributable brand/author',
+      'Sources / links: credible citations and internal links',
+      'Freshness: visible publish/update dates',
+    ],
+    read: 'Further reading',
+    ctaTitle: 'Want an expert GEO / SEO audit?',
+    ctaDesc: 'Turn your checker score into real growth: a one-time site audit that pinpoints the 30 pages to fix first and your fastest keyword wins.',
+    ctaPoints: ['Content-debt inventory (90-day zero-click pages)', 'Site-wide GEO readiness scan with fix priorities', 'Semantic cluster & internal-linking architecture'],
+    ctaBtn: 'Book a free 15-min consultation',
+    ctaNote: 'Early-stage pricing, limited slots. Please include your site URL.',
+  },
+}[lang];
+
+const MAIL_SUBJECT = {
+  'zh-hant': 'GEO/SEO 健檢諮詢預約',
+  'zh-hans': 'GEO/SEO 健检咨询预约',
+  en: 'GEO/SEO audit consultation',
+}[lang];
+const ctaHref = FORM_URL || `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(MAIL_SUBJECT)}`;
+
+const alternates = { 'zh-hant': '/zh-hant/geo/', 'zh-hans': '/zh-hans/geo/', en: '/en/geo/' };
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: T.h1,
+  applicationCategory: 'SEO Tool',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0' },
+  publisher: { '@type': 'Organization', name: 'SemanticLab' },
+};
+---
+<Base title={T.title} description={T.desc} lang={lang} alternates={alternates} schemas={[schema]}>
+  <h1>{T.h1}</h1>
+  <p>{T.lead}</p>
+
+  <iframe class="tool-frame" src="/tools/geo-readiness-checker.html" title={T.h1} loading="lazy"></iframe>
+
+  <section class="cta-card">
+    <h2 class="cta-title">{T.ctaTitle}</h2>
+    <p>{T.ctaDesc}</p>
+    <ul>
+      {T.ctaPoints.map((p) => <li>{p}</li>)}
+    </ul>
+    <a class="cta-btn" href={ctaHref}>{T.ctaBtn}</a>
+    <p class="cta-note">{T.ctaNote}</p>
+  </section>
+
+  <h2>{T.how}</h2>
+  <ul>
+    {T.signals.map((s) => <li>{s}</li>)}
+  </ul>
+
+  <h2>{T.read}</h2>
+  <ul>
+    {lang === 'zh-hant' ? (
+      <>
+        <li><a href="/zh-hant/blog/what-is-geo/">GEO 是什麼？生成式引擎優化完整定義（2026）</a></li>
+        <li><a href="/zh-hant/blog/geo-vs-seo/">GEO 與傳統 SEO 有什麼不同？一張表看懂</a></li>
+        <li><a href="/zh-hant/blog/geo-aeo-aio/">GEO、AEO、AIO 差在哪？三者關係一次搞懂</a></li>
+      </>
+    ) : (
+      <li><a href={`/${lang}/blog/`}>Blog</a></li>
+    )}
+  </ul>
+</Base>
+
+<style>
+  .cta-card {
+    margin-top: 36px;
+    background: linear-gradient(135deg, #1a2740, #171b22);
+    border: 1px solid #2f4a7a;
+    border-radius: 14px;
+    padding: 28px 26px;
+  }
+  .cta-title { margin-top: 0; border-bottom: none; font-size: 21px; }
+  .cta-card ul { margin: 10px 0 20px; padding-left: 20px; color: var(--dim); }
+  .cta-card li { margin: 4px 0; }
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff !important;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 13px 26px;
+    border-radius: 10px;
+  }
+  .cta-btn:hover { filter: brightness(1.1); }
+  .cta-note { color: var(--dim); font-size: 12.5px; margin-top: 12px; margin-bottom: 0; }
+</style>

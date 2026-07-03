@@ -1,0 +1,36 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'zh-hant' } }, { params: { lang: 'zh-hans' } }, { params: { lang: 'en' } }];
+}
+const lang = Astro.params.lang as 'zh-hant' | 'zh-hans' | 'en';
+const T = {
+  'zh-hant': { title: '部落格 — SemanticLab', desc: 'SEO/GEO 實戰文章：語意集群、AI 內容產線、被 AI 引用的方法。', h1: '部落格' },
+  'zh-hans': { title: '博客 — SemanticLab', desc: 'SEO/GEO 实战文章：语义集群、AI 内容产线、被 AI 引用的方法。', h1: '博客' },
+  en: { title: 'Blog — SemanticLab', desc: 'Practical SEO/GEO articles: semantic clusters, AI content pipelines, getting cited by AI.', h1: 'Blog' },
+}[lang];
+
+const now = new Date();
+const posts = (await getCollection('blog', (p) => p.id.startsWith(`${lang}/`) && !p.data.draft && p.data.date_published <= now))
+  .sort((a, b) => b.data.date_published.valueOf() - a.data.date_published.valueOf());
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+const alternates = { 'zh-hant': '/zh-hant/blog/', 'zh-hans': '/zh-hans/blog/', en: '/en/blog/' };
+---
+<Base title={T.title} description={T.desc} lang={lang} alternates={alternates}>
+  <h1>{T.h1}</h1>
+  {posts.length === 0 ? (
+    <p style="color:var(--dim)">Coming soon.</p>
+  ) : (
+    <ul class="card-list">
+      {posts.map((p) => (
+        <li>
+          <a href={`/${lang}/blog/${p.id.split('/').slice(1).join('/')}/`}>{p.data.title}</a>
+          <p>{fmt(p.data.date_published)}{p.data.cluster ? ` · ${p.data.cluster}` : ''}</p>
+          <p>{p.data.description}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>

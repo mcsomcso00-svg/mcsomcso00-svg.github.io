@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEO 就緒度檢測器 · GEO Readiness Checker</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#171b22; --panel2:#1f242d; --line:#2a313c;
+    --txt:#e6edf3; --dim:#9aa4b2; --accent:#4f8cff; --good:#3fb950; --warn:#d29922; --bad:#f85149;
+    --radius:14px; font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Noto Sans SC",Roboto,Arial,sans-serif;
+    line-height:1.6;padding:24px}
+  .wrap{max-width:920px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:8px}
+  h1{font-size:22px;margin:0;letter-spacing:.2px}
+  .sub{color:var(--dim);font-size:13px;margin:2px 0 20px}
+  .langs{display:flex;gap:6px}
+  .langs button{background:var(--panel2);color:var(--dim);border:1px solid var(--line);
+    padding:6px 10px;border-radius:8px;cursor:pointer;font-size:12px}
+  .langs button.active{color:#fff;border-color:var(--accent);background:#20315a}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+  label{display:block;font-size:13px;color:var(--dim);margin-bottom:6px}
+  textarea,input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    border-radius:10px;padding:12px;font-size:14px;font-family:inherit;resize:vertical}
+  textarea{min-height:220px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  .row>div{flex:1;min-width:200px}
+  .btn{background:var(--accent);color:#fff;border:none;padding:12px 22px;border-radius:10px;
+    font-size:15px;font-weight:600;cursor:pointer;margin-top:14px}
+  .btn:hover{filter:brightness(1.08)}
+  .score-wrap{display:none;text-align:center;padding:24px 18px}
+  .score-num{font-size:56px;font-weight:800;line-height:1}
+  .score-label{color:var(--dim);font-size:13px;margin-top:6px}
+  .gauge{height:10px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:16px auto 0;max-width:420px}
+  .gauge>i{display:block;height:100%;border-radius:99px;transition:width .6s}
+  .signals{display:none}
+  .sig{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+  .sig:first-child{border-top:none}
+  .dot{flex:none;width:10px;height:10px;border-radius:99px;margin-top:7px}
+  .sig .meta{flex:1}
+  .sig .nm{font-weight:600;font-size:14px}
+  .sig .tip{color:var(--dim);font-size:13px;margin-top:2px}
+  .sig .pts{flex:none;color:var(--dim);font-size:13px;font-variant-numeric:tabular-nums}
+  .foot{color:var(--dim);font-size:12px;margin-top:8px}
+  .foot b{color:var(--txt)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="t_title">GEO 就緒度檢測器</h1>
+    </div>
+    <div class="langs">
+      <button data-l="zh-Hant" class="active">繁中</button>
+      <button data-l="zh-Hans">简中</button>
+      <button data-l="en">EN</button>
+    </div>
+  </header>
+  <p class="sub" id="t_sub">貼上你的文章，檢測它有多容易被 ChatGPT／Perplexity／AI Overview 引用，並拿到具體修正建議。</p>
+
+  <div class="card">
+    <label id="t_lbl_article">文章內容（純文字或 HTML 皆可）</label>
+    <textarea id="article" placeholder=""></textarea>
+    <div class="row">
+      <div>
+        <label id="t_lbl_brand">品牌／實體名稱（選填，用來檢查實體清晰度）</label>
+        <input id="brand" type="text" placeholder="">
+      </div>
+    </div>
+    <button class="btn" id="t_btn" onclick="run()">檢測</button>
+  </div>
+
+  <div class="card score-wrap" id="scoreCard">
+    <div class="score-num" id="scoreNum">0</div>
+    <div class="score-label" id="scoreLbl">/ 100 · GEO 就緒度</div>
+    <div class="gauge"><i id="gauge" style="width:0%"></i></div>
+  </div>
+
+  <div class="card signals" id="sigCard"></div>
+
+  <p class="foot" id="t_foot"></p>
+</div>
+
+<script>
+/* ---------- i18n ---------- */
+const I18N = {
+  "zh-Hant":{
+    title:"GEO 就緒度檢測器",
+    sub:"貼上你的文章，檢測它有多容易被 ChatGPT／Perplexity／AI Overview 引用，並拿到具體修正建議。",
+    lblArticle:"文章內容（純文字或 HTML 皆可）",
+    lblBrand:"品牌／實體名稱（選填，用來檢查實體清晰度）",
+    btn:"檢測", scoreLbl:"/ 100 · GEO 就緒度",
+    placeholder:"把整篇文章貼進來…",
+    empty:"請先貼上文章內容。",
+    foot:"評分為<b>啟發式估算</b>，反映 AI 引用友善度的訊號強度，非官方保證。方法：答案優先段落、可引用數據、結構、FAQ、清單/表格、深度、實體、來源、時效。",
+    sigs:{
+      answer:["答案優先開頭","開頭給了一段自包含的清楚答案（AI 最愛直接抓）。","開頭沒有自包含答案；把核心結論濃縮成 40–80 字放最前面。"],
+      data:["可引用數據","含具體數字/百分比/數據，AI 傾向引用具體事實。","數據太少；加入數字、比例、實測結果或比較數值。"],
+      structure:["結構與標題","有清楚的標題階層，方便 AI 解析段落。","缺少標題結構；用 H2/H3 切分主題。"],
+      faq:["問題／FAQ","含問句，貼近使用者與 AI 的提問方式。","沒有問句；加入 FAQ 或以問題當小標。"],
+      list:["清單／表格","含清單或表格，利於摘要與引用。","沒有清單/表格；把比較或步驟做成條列或表格。"],
+      depth:["內容深度","篇幅足以完整覆蓋意圖。","篇幅偏短或過長；目標是把單一意圖答完整。"],
+      entity:["實體清晰度","文中明確出現品牌/實體，利於 AI 正確歸屬。","未偵測到品牌/實體；明確標示作者與品牌，並加 Schema。"],
+      sources:["來源／連結","含外部/內部連結，提升可信與內鏈權重。","缺少連結；引用來源並用微上下文內鏈灌權重。"],
+      fresh:["時效性","含日期，AI 偏好較新的來源。","未偵測到日期；標示發布/更新日期。"]
+    }
+  },
+  "zh-Hans":{
+    title:"GEO 就绪度检测器",
+    sub:"粘贴你的文章，检测它有多容易被 ChatGPT／Perplexity／AI Overview 引用，并获得具体修改建议。",
+    lblArticle:"文章内容（纯文本或 HTML 均可）",
+    lblBrand:"品牌／实体名称（选填，用于检查实体清晰度）",
+    btn:"检测", scoreLbl:"/ 100 · GEO 就绪度",
+    placeholder:"把整篇文章粘贴进来…",
+    empty:"请先粘贴文章内容。",
+    foot:"评分为<b>启发式估算</b>，反映 AI 引用友好度的信号强度，非官方保证。维度：答案优先段落、可引用数据、结构、FAQ、清单/表格、深度、实体、来源、时效。",
+    sigs:{
+      answer:["答案优先开头","开头给出自包含的清晰答案（AI 最爱直接抓）。","开头没有自包含答案；把核心结论浓缩成 40–80 字放最前面。"],
+      data:["可引用数据","含具体数字/百分比/数据，AI 倾向引用具体事实。","数据太少；加入数字、比例、实测结果或比较数值。"],
+      structure:["结构与标题","有清晰的标题层级，便于 AI 解析段落。","缺少标题结构；用 H2/H3 切分主题。"],
+      faq:["问题／FAQ","含问句，贴近用户与 AI 的提问方式。","没有问句；加入 FAQ 或以问题作小标。"],
+      list:["清单／表格","含清单或表格，利于摘要与引用。","没有清单/表格；把比较或步骤做成条列或表格。"],
+      depth:["内容深度","篇幅足以完整覆盖意图。","篇幅偏短或过长；目标是把单一意图答完整。"],
+      entity:["实体清晰度","文中明确出现品牌/实体，利于 AI 正确归属。","未检测到品牌/实体；明确标注作者与品牌，并加 Schema。"],
+      sources:["来源／链接","含外部/内部链接，提升可信与内链权重。","缺少链接；引用来源并用微上下文内链灌权重。"],
+      fresh:["时效性","含日期，AI 偏好较新的来源。","未检测到日期；标注发布/更新日期。"]
+    }
+  },
+  "en":{
+    title:"GEO Readiness Checker",
+    sub:"Paste your article to see how citable it is for ChatGPT / Perplexity / AI Overview, and get specific fixes.",
+    lblArticle:"Article content (plain text or HTML)",
+    lblBrand:"Brand / entity name (optional, checks entity clarity)",
+    btn:"Check", scoreLbl:"/ 100 · GEO readiness",
+    placeholder:"Paste the full article here…",
+    empty:"Please paste article content first.",
+    foot:"Score is a <b>heuristic estimate</b> of AI-citation friendliness signals, not an official guarantee. Signals: answer-first block, quotable data, structure, FAQ, lists/tables, depth, entity, sources, freshness.",
+    sigs:{
+      answer:["Answer-first opening","Opens with a self-contained, clear answer (AI loves to extract this).","No self-contained answer up top; put a 40–80 word conclusion first."],
+      data:["Quotable data","Contains concrete numbers/percentages/stats; AI cites specifics.","Too few data points; add numbers, ratios, test results, comparisons."],
+      structure:["Structure & headings","Clear heading hierarchy, easy for AI to parse sections.","Missing heading structure; break topics into H2/H3."],
+      faq:["Questions / FAQ","Contains questions, matching how users and AI ask.","No questions; add an FAQ or use questions as subheads."],
+      list:["Lists / tables","Contains lists or tables, good for summarizing and citing.","No lists/tables; turn comparisons or steps into bullets or a table."],
+      depth:["Content depth","Long enough to fully cover the intent.","Too short or too long; aim to fully answer one intent."],
+      entity:["Entity clarity","Brand/entity appears explicitly, helping AI attribute correctly.","No brand/entity detected; state author + brand clearly and add schema."],
+      sources:["Sources / links","Contains external/internal links, boosting trust and internal weight.","No links; cite sources and use micro-context internal links."],
+      fresh:["Freshness","Contains a date; AI prefers recent sources.","No date detected; show a published/updated date."]
+    }
+  }
+};
+let LANG="zh-Hant";
+
+/* ---------- language switch ---------- */
+document.querySelectorAll(".langs button").forEach(b=>{
+  b.onclick=()=>{
+    LANG=b.dataset.l;
+    document.querySelectorAll(".langs button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.documentElement.lang=LANG;
+    applyLang();
+  };
+});
+function applyLang(){
+  const t=I18N[LANG];
+  document.getElementById("t_title").textContent=t.title;
+  document.getElementById("t_sub").textContent=t.sub;
+  document.getElementById("t_lbl_article").textContent=t.lblArticle;
+  document.getElementById("t_lbl_brand").textContent=t.lblBrand;
+  document.getElementById("t_btn").textContent=t.btn;
+  document.getElementById("scoreLbl").textContent=t.scoreLbl;
+  document.getElementById("article").placeholder=t.placeholder;
+  document.getElementById("t_foot").innerHTML=t.foot;
+}
+applyLang();
+
+/* ---------- analysis ---------- */
+function analyze(raw, brand){
+  const html = /<[a-z][\s\S]*>/i.test(raw);
+  const text = raw.replace(/<script[\s\S]*?<\/script>/gi,"")
+                  .replace(/<style[\s\S]*?<\/style>/gi,"")
+                  .replace(/<[^>]+>/g," ");
+  const cjk = (text.match(/[一-鿿]/g)||[]).length;
+  const latinWords = (text.trim().match(/[A-Za-z0-9'’]+/g)||[]).length;
+  const units = cjk + latinWords;                      // language-agnostic length
+
+  // first paragraph
+  const paras = raw.split(/\n\s*\n|<\/p>|<br\s*\/?>(?:\s*<br\s*\/?>)?/i)
+                   .map(p=>p.replace(/<[^>]+>/g," ").trim()).filter(p=>p.length>0);
+  const first = paras[0]||"";
+  const firstUnits = (first.match(/[一-鿿]/g)||[]).length + (first.match(/[A-Za-z0-9]+/g)||[]).length;
+
+  const numbers = (text.match(/\d+(?:[.,]\d+)?\s?%?/g)||[]).length;
+  const questions = (text.match(/[?？]/g)||[]).length;
+  const mdHeads = (raw.match(/^#{1,6}\s.+/gm)||[]).length;
+  const htmlHeads = (raw.match(/<h[1-6][\s>]/gi)||[]).length;
+  const cueHeads = (raw.split(/\n/).filter(l=>{l=l.trim();return l.length>0&&l.length<42&&!/[。.!！?？,，]$/.test(l);}).length);
+  const heads = mdHeads + htmlHeads + (mdHeads+htmlHeads===0?Math.min(cueHeads, 6):0);
+  const lists = (raw.match(/^\s*(?:[-*•]|\d+[.)])\s+/gm)||[]).length + (raw.match(/<(?:ul|ol|li|table)[\s>]/gi)||[]).length;
+  const links = (raw.match(/https?:\/\/[^\s"'<)]+/g)||[]).length + (raw.match(/<a\s[^>]*href/gi)||[]).length;
+  const dates = (raw.match(/\b(20\d{2})([-\/年.](0?[1-9]|1[0-2]))?/g)||[]).length
+              + (raw.match(/\b(20\d{2})\b/g)?0:0);
+  const brandCount = brand ? (raw.toLowerCase().split(brand.toLowerCase()).length-1) : -1;
+
+  // signal scoring: each returns [state 0/1/2, points]  (2=good,1=warn,0=bad)
+  const S={};
+  S.answer   = firstUnits>=30 && firstUnits<=140 ? 2 : (firstUnits>0?1:0);
+  S.data     = numbers>=5?2:(numbers>=2?1:0);
+  S.structure= heads>=3?2:(heads>=1?1:0);
+  S.faq      = questions>=2?2:(questions>=1?1:0);
+  S.list     = lists>=3?2:(lists>=1?1:0);
+  S.depth    = (units>=500&&units<=3500)?2:((units>=250&&units<5000)?1:0);
+  S.entity   = brandCount===-1?1:(brandCount>=1?2:0);
+  S.sources  = links>=2?2:(links>=1?1:0);
+  S.fresh    = dates>=1?2:0;
+
+  const W={answer:15,data:15,structure:15,faq:10,list:10,depth:10,entity:10,sources:10,fresh:5};
+  let score=0, max=0;
+  for(const k in W){ score += (S[k]/2)*W[k]; max+=W[k]; }
+  score=Math.round(score);
+
+  return {score, S, W, order:["answer","data","structure","faq","list","depth","entity","sources","fresh"]};
+}
+
+function run(){
+  const raw=document.getElementById("article").value.trim();
+  const brand=document.getElementById("brand").value.trim();
+  const t=I18N[LANG];
+  if(!raw){ alert(t.empty); return; }
+  const r=analyze(raw, brand);
+
+  const sc=document.getElementById("scoreCard");
+  sc.style.display="block";
+  document.getElementById("scoreNum").textContent=r.score;
+  const g=document.getElementById("gauge");
+  g.style.width=r.score+"%";
+  const col = r.score>=75?"var(--good)":(r.score>=50?"var(--warn)":"var(--bad)");
+  g.style.background=col;
+  document.getElementById("scoreNum").style.color=col;
+
+  const box=document.getElementById("sigCard");
+  box.style.display="block";
+  box.innerHTML="";
+  r.order.forEach(k=>{
+    const st=r.S[k];
+    const [nm,goodTip,badTip]=t.sigs[k];
+    const dotCol = st===2?"var(--good)":(st===1?"var(--warn)":"var(--bad)");
+    const tip = st===2?goodTip:badTip;
+    const pts = Math.round((st/2)*r.W[k]);
+    const el=document.createElement("div");
+    el.className="sig";
+    el.innerHTML=`<span class="dot" style="background:${dotCol}"></span>
+      <div class="meta"><div class="nm">${nm}</div><div class="tip">${tip}</div></div>
+      <div class="pts">${pts}/${r.W[k]}</div>`;
+    box.appendChild(el);
+  });
+  sc.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+</script>
+</body>
+</html>
