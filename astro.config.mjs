@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // 之後買了自訂網域改這裡即可（hreflang/sitemap/canonical 都吃這個值）
 export default defineConfig({
-  site: 'https://mcsomcso00-svg.github.io',
+  site: 'https://geoseotoday.com',
   trailingSlash: 'always',
   i18n: {
     locales: ['zh-hant', 'zh-hans', 'en'],

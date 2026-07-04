@@ -4,13 +4,13 @@ description: GEO 就緒度檢測是在發文前用 9 個訊號替文章打分：
 target_keyword: geo 就緒度 檢測
 intent: commercial
 cluster: GEO（群集 1）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-08
 date_updated: 2026-07-08
 ---
 # GEO 就緒度檢測：你的文章夠格被 AI 引用嗎？
 
-**GEO 就緒度檢測，是在按下發布鍵之前，用一套可量化的訊號檢查文章「夠不夠格被 AI 引用」。** SemanticLab 的免費 [GEO 就緒度檢測器](/zh-hant/geo/) 用 9 個訊號打出 0–100 分，75 分以上才建議發布。本文完整拆解這 9 個訊號的判定標準。
+**GEO 就緒度檢測，是在按下發布鍵之前，用一套可量化的訊號檢查文章「夠不夠格被 AI 引用」。** GeoSeoToday 的免費 [GEO 就緒度檢測器](/zh-hant/geo/) 用 9 個訊號打出 0–100 分，75 分以上才建議發布。本文完整拆解這 9 個訊號的判定標準。
 
 ## 為什麼要在發文前檢測？
 
@@ -53,7 +53,7 @@ date_updated: 2026-07-08
 ## 常見問題（FAQ）
 
 **Q1：檢測器免費到什麼程度？有次數限制嗎？**
-完全免費、無次數限制、不用註冊。它是 SemanticLab GEO 服務頁的內嵌工具，開放給所有人用。
+完全免費、無次數限制、不用註冊。它是 GeoSeoToday GEO 服務頁的內嵌工具，開放給所有人用。
 
 **Q2：舊文章也該拿去測嗎？**
 該，而且優先測「有排名但沒被 AI 引用」的文章——這批通常只差開頭改寫＋補數據，是投資報酬率最高的存量優化。
@@ -66,4 +66,4 @@ date_updated: 2026-07-08
 
 ---
 
-與其猜 AI 喜不喜歡你的文章，不如直接量。SemanticLab 語意實驗室把整套審核邏輯做成免費的 [GEO 就緒度檢測器](/zh-hant/geo/)，發文前貼一次、30 秒拿到修正清單。GEO 的完整脈絡請讀 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)，段落層級的寫法可再參考 [GEO 內容結構範本](/zh-hant/blog/geo-content-structure/)。
+與其猜 AI 喜不喜歡你的文章，不如直接量。GeoSeoToday把整套審核邏輯做成免費的 [GEO 就緒度檢測器](/zh-hant/geo/)，發文前貼一次、30 秒拿到修正清單。GEO 的完整脈絡請讀 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)，段落層級的寫法可再參考 [GEO 內容結構範本](/zh-hant/blog/geo-content-structure/)。

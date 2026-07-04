@@ -26,7 +26,7 @@ const rssHref = `/${lang}/rss.xml`;
 const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'SemanticLab 語意實驗室',
+  name: 'GeoSeoToday',
   url: site.toString(),
   logo: ogImage.toString(),
   description: 'SEO / GEO 實戰內容與工具，教你讓內容被 Google 排名、被 AI 引用。',
@@ -34,7 +34,7 @@ const orgSchema = {
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'SemanticLab',
+  name: 'GeoSeoToday',
   url: site.toString(),
   inLanguage: HREFLANG[lang],
 };
@@ -70,7 +70,7 @@ const nav = NAV[lang];
       <link rel="alternate" hreflang={HREFLANG[l]} href={new URL(path, site)} />
     ))}
     {alternates && <link rel="alternate" hreflang="x-default" href={new URL(xDefaultPath, site)} />}
-    <meta property="og:site_name" content="SemanticLab" />
+    <meta property="og:site_name" content="GeoSeoToday" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -87,14 +87,14 @@ const nav = NAV[lang];
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="alternate" type="application/rss+xml" title="SemanticLab RSS" href={rssHref} />
+    <link rel="alternate" type="application/rss+xml" title="GeoSeoToday RSS" href={rssHref} />
     {allSchemas.map((s) => (
       <script type="application/ld+json" set:html={JSON.stringify(s)} />
     ))}
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href={`/${lang}/`}>SemanticLab</a>
+      <a class="brand" href={`/${lang}/`}>GeoSeoToday</a>
       <nav>
         <a href={`/${lang}/`}>{nav.home}</a>
         <a href={`/${lang}/blog/`}>{nav.blog}</a>
@@ -111,7 +111,7 @@ const nav = NAV[lang];
     </header>
     <main><slot /></main>
     <footer class="site-footer">
-      <p>© 2026 SemanticLab · <a href={`/${lang}/blog/`}>{nav.blog}</a> · <a href={`/${lang}/geo/`}>{nav.geo}</a> · <a href={`/${lang}/audit/`}>{nav.audit}</a></p>
+      <p>© 2026 GeoSeoToday · <a href={`/${lang}/blog/`}>{nav.blog}</a> · <a href={`/${lang}/geo/`}>{nav.geo}</a> · <a href={`/${lang}/audit/`}>{nav.audit}</a></p>
     </footer>
   </body>
 </html>

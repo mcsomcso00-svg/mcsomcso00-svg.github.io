@@ -4,7 +4,7 @@ description: Perplexity 每個答案都附引用來源，是 GEO 見效最快的
 target_keyword: perplexity 引用來源
 intent: informational
 cluster: GEO（群集 1）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-04
 date_updated: 2026-07-04
 ---
@@ -77,4 +77,4 @@ Perplexity 的使用者輸入的是完整問題。你的 H1、H2 越接近真實
 
 ---
 
-想逐項檢查自己的文章符不符合上述訊號？SemanticLab 語意實驗室的免費 [GEO 就緒度檢測器](/zh-hant/geo/) 用九項訊號幫你打分，75 分以上再發布。整套方法論的全貌請見 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)，段落寫法的完整範本則在〈[GEO 內容結構範本](/zh-hant/blog/geo-content-structure/)〉。
+想逐項檢查自己的文章符不符合上述訊號？GeoSeoToday的免費 [GEO 就緒度檢測器](/zh-hant/geo/) 用九項訊號幫你打分，75 分以上再發布。整套方法論的全貌請見 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)，段落寫法的完整範本則在〈[GEO 內容結構範本](/zh-hant/blog/geo-content-structure/)〉。

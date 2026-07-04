@@ -4,7 +4,7 @@ description: 想被 ChatGPT 引用，關鍵有三步：開放 GPTBot 與 OAI-Sea
 target_keyword: chatgpt 引用 網站
 intent: informational
 cluster: GEO（群集 1）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-04
 date_updated: 2026-07-04
 ---
@@ -42,7 +42,7 @@ ChatGPT 生成答案時，偏好抓取「單獨拿出來也完整成立」的段
 | 具體 | 「效果很好」 | 「可見度最多提升 40%（GEO 論文實測）」 |
 | 有結構 | 一大坨純文字 | 清單、表格、H2 分段 |
 
-其中「答案優先」最關鍵：文章第一段就用粗體給出 40–80 字的完整結論，之後再展開。這正是本文開頭的寫法，也是 SemanticLab 評分工具中權重最高的訊號之一。
+其中「答案優先」最關鍵：文章第一段就用粗體給出 40–80 字的完整結論，之後再展開。這正是本文開頭的寫法，也是 GeoSeoToday 評分工具中權重最高的訊號之一。
 
 ## 第三步：建立讓模型信任的實體訊號
 
@@ -73,4 +73,4 @@ ChatGPT 在多個來源之間挑選時，會偏向「來歷清楚」的頁面。
 
 ---
 
-想知道你的文章現在夠不夠格被 ChatGPT 引用？SemanticLab 語意實驗室把上述檢查邏輯做成了免費的 [GEO 就緒度檢測器](/zh-hant/geo/)，貼上文章 30 秒拿到 0–100 分。想從頭理解整套方法，請讀 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)；如果你的目標引擎是 Perplexity，另見〈[如何被 Perplexity 當作來源引用](/zh-hant/blog/cited-by-perplexity/)〉。
+想知道你的文章現在夠不夠格被 ChatGPT 引用？GeoSeoToday把上述檢查邏輯做成了免費的 [GEO 就緒度檢測器](/zh-hant/geo/)，貼上文章 30 秒拿到 0–100 分。想從頭理解整套方法，請讀 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)；如果你的目標引擎是 Perplexity，另見〈[如何被 Perplexity 當作來源引用](/zh-hant/blog/cited-by-perplexity/)〉。

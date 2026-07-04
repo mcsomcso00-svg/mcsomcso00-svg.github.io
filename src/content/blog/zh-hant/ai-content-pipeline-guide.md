@@ -1,10 +1,10 @@
 ---
 title: AI 內容產線完整指南：批量產文不被降權的系統方法
-description: 這是 SemanticLab 的 AI 內容產線總整理：從意圖矩陣、語意集群、拆分模型工作流、SynthID 風險，到人工終審與 E-E-A-T 補強，一頁看懂如何用 AI 批量產文而不被 Google 降權，並連結 10 篇深入教學。
+description: 這是 GeoSeoToday 的 AI 內容產線總整理：從意圖矩陣、語意集群、拆分模型工作流、SynthID 風險，到人工終審與 E-E-A-T 補強，一頁看懂如何用 AI 批量產文而不被 Google 降權，並連結 10 篇深入教學。
 target_keyword: ai 內容產線
 intent: commercial
 cluster: AI 內容產線（群集 2）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-13
 date_updated: 2026-07-13
 ---
@@ -122,4 +122,4 @@ AI 寫得出「專業」，寫不出「經驗」。終審清單的重點：
 
 ---
 
-想知道你的產線出廠品質如何？把任何一篇 AI 產出的文章貼進 SemanticLab 語意實驗室的 [GEO 就緒度檢測器](/zh-hant/geo/)，30 秒拿到 0–100 分與逐項修正建議——這就是本產線工站 4 使用的同一套驗收邏輯。
+想知道你的產線出廠品質如何？把任何一篇 AI 產出的文章貼進 GeoSeoToday的 [GEO 就緒度檢測器](/zh-hant/geo/)，30 秒拿到 0–100 分與逐項修正建議——這就是本產線工站 4 使用的同一套驗收邏輯。

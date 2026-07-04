@@ -4,7 +4,7 @@ description: 使用者越來越常直接問 AI「哪個工具最好用」，SaaS
 target_keyword: saas geo
 intent: informational
 cluster: GEO（群集 1）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-07
 date_updated: 2026-07-07
 ---
@@ -75,4 +75,4 @@ AI 推薦流量的意圖品質高——會問「哪個工具解決 X」的人已
 
 ---
 
-想檢查你的產品頁與比較頁夠不夠格被 AI 引用？用 SemanticLab 語意實驗室的免費 [GEO 就緒度檢測器](/zh-hant/geo/) 逐項打分。整套方法論見 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)；如果你的商業模式是電商而非 SaaS，對應策略在〈[電商產品頁如何做 GEO](/zh-hant/blog/geo-for-ecommerce/)〉。
+想檢查你的產品頁與比較頁夠不夠格被 AI 引用？用 GeoSeoToday的免費 [GEO 就緒度檢測器](/zh-hant/geo/) 逐項打分。整套方法論見 [GEO 完整指南](/zh-hant/blog/geo-complete-guide/)；如果你的商業模式是電商而非 SaaS，對應策略在〈[電商產品頁如何做 GEO](/zh-hant/blog/geo-for-ecommerce/)〉。

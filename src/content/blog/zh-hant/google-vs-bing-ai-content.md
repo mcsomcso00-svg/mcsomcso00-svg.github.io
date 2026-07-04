@@ -4,7 +4,7 @@ description: 同一批 AI 文章，Google 幾乎不收錄、Bing 卻給出破 3 
 target_keyword: google bing ai 內容
 intent: informational
 cluster: AI 內容產線（群集 2）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-10
 date_updated: 2026-07-10
 ---
@@ -64,4 +64,4 @@ Google 用 Search Console，Bing 用 Bing Webmaster Tools（支援從 GSC 一鍵
 
 ---
 
-SemanticLab 語意實驗室的建議很簡單：以 Google 的嚴格標準建產線，Bing 的流量會自己來。發布前用 [GEO 就緒度檢測器](/zh-hant/geo/) 確認文章結構達標；完整產線方法論見〈[AI 內容產線完整指南](/zh-hant/blog/ai-content-pipeline-guide/)〉，實測細節則看〈[為什麼全用 Gemini 產文會被 Google 冷處理](/zh-hant/blog/gemini-content-indexing/)〉。
+GeoSeoToday的建議很簡單：以 Google 的嚴格標準建產線，Bing 的流量會自己來。發布前用 [GEO 就緒度檢測器](/zh-hant/geo/) 確認文章結構達標；完整產線方法論見〈[AI 內容產線完整指南](/zh-hant/blog/ai-content-pipeline-guide/)〉，實測細節則看〈[為什麼全用 Gemini 產文會被 Google 冷處理](/zh-hant/blog/gemini-content-indexing/)〉。

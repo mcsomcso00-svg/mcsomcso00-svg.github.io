@@ -4,7 +4,7 @@ description: 新手用 AI 寫第一批部落格文章，最常敗在直接叫 AI
 target_keyword: ai 部落格 新手
 intent: informational
 cluster: AI 內容產線（群集 2）
-author: SemanticLab 語意實驗室
+author: GeoSeoToday
 date_published: 2026-07-12
 date_updated: 2026-07-12
 ---
@@ -78,4 +78,4 @@ date_updated: 2026-07-12
 
 ---
 
-這套 SOP 是 SemanticLab 語意實驗室產線的新手版。每篇發布前把文章貼進 [GEO 就緒度檢測器](/zh-hant/geo/) 打分，75 分以上再發；等第一個集群跑順，進階版的完整方法論在〈[AI 內容產線完整指南](/zh-hant/blog/ai-content-pipeline-guide/)〉，終審的完整清單見〈[AI 產文後的人工終審清單](/zh-hant/blog/ai-content-eeat-checklist/)〉。
+這套 SOP 是 GeoSeoToday產線的新手版。每篇發布前把文章貼進 [GEO 就緒度檢測器](/zh-hant/geo/) 打分，75 分以上再發；等第一個集群跑順，進階版的完整方法論在〈[AI 內容產線完整指南](/zh-hant/blog/ai-content-pipeline-guide/)〉，終審的完整清單見〈[AI 產文後的人工終審清單](/zh-hant/blog/ai-content-eeat-checklist/)〉。

@@ -9,7 +9,7 @@ const lang = Astro.params.lang as 'zh-hant' | 'zh-hans' | 'en';
 
 const T = {
   'zh-hant': {
-    title: '免費 SEO／GEO 健檢診斷報告 — SemanticLab',
+    title: '免費 SEO／GEO 健檢診斷報告 — GeoSeoToday',
     desc: '填一分鐘表單，我們用你的真實網址跑一份深入的 SEO/GEO 診斷，逐項列出問題與段落舉例，完全免費。',
     h1: '免費領取你的「詳細 SEO／GEO 健檢診斷報告」',
     lead: '這不是通用清單。留下你的網址，我們會用九項 GEO 訊號逐頁掃描、盤點內容負債、比對前 3 名對手，指名到「哪一頁、哪一段」出問題。',
@@ -32,10 +32,10 @@ const T = {
     fMsg: '你最想解決的問題（選填）',
     submit: '免費領取健檢診斷報告',
     note: '整份報告完全免費，我們也不會把你的資料用於行銷名單。名額有限，先到先得。',
-    subject: '【SemanticLab】免費 SEO/GEO 健檢診斷報告索取',
+    subject: '【GeoSeoToday】免費 SEO/GEO 健檢診斷報告索取',
   },
   'zh-hans': {
-    title: '免费 SEO／GEO 健检诊断报告 — SemanticLab',
+    title: '免费 SEO／GEO 健检诊断报告 — GeoSeoToday',
     desc: '填一分钟表单，我们用你的真实网址跑一份深入的 SEO/GEO 诊断，逐项列出问题与段落举例，完全免费。',
     h1: '免费领取你的「详细 SEO／GEO 健检诊断报告」',
     lead: '这不是通用清单。留下你的网址，我们会用九项 GEO 信号逐页扫描、盘点内容负债、比对前 3 名对手，指名到「哪一页、哪一段」出问题。',
@@ -58,10 +58,10 @@ const T = {
     fMsg: '你最想解决的问题（选填）',
     submit: '免费领取健检诊断报告',
     note: '整份报告完全免费，我们也不会把你的资料用于营销名单。名额有限，先到先得。',
-    subject: '【SemanticLab】免费 SEO/GEO 健检诊断报告索取',
+    subject: '【GeoSeoToday】免费 SEO/GEO 健检诊断报告索取',
   },
   en: {
-    title: 'Free SEO / GEO Audit Diagnosis Report — SemanticLab',
+    title: 'Free SEO / GEO Audit Diagnosis Report — GeoSeoToday',
     desc: 'Fill a one-minute form and we run a deep SEO/GEO diagnosis on your real URL, listing issues with paragraph-level evidence. Completely free.',
     h1: 'Get your detailed SEO / GEO audit report — free',
     lead: "Not a generic checklist. Leave your URL and we'll scan every page on nine GEO signals, inventory your content debt, and benchmark you against the top 3 competitors — pinned to the exact page and paragraph.",
@@ -84,7 +84,7 @@ const T = {
     fMsg: 'What you most want to fix (optional)',
     submit: 'Get my free diagnosis report',
     note: 'The whole report is free, and we never use your data for marketing lists. Limited slots, first come first served.',
-    subject: '[SemanticLab] Free SEO/GEO audit diagnosis request',
+    subject: '[GeoSeoToday] Free SEO/GEO audit diagnosis request',
   },
 }[lang];
 
@@ -115,7 +115,7 @@ const breadcrumbs = [
         data-thanks={thanksPath} data-fallback={AUDIT_EMAIL} data-subject={T.subject}>
     <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
     <input type="hidden" name="subject" value={T.subject} />
-    <input type="hidden" name="from_name" value="SemanticLab Audit Form" />
+    <input type="hidden" name="from_name" value="GeoSeoToday Audit Form" />
     <!-- 蜜罐：機器人才會填，Web3Forms 會擋掉 -->
     <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
 

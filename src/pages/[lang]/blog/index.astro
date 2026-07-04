@@ -7,9 +7,9 @@ export function getStaticPaths() {
 }
 const lang = Astro.params.lang as 'zh-hant' | 'zh-hans' | 'en';
 const T = {
-  'zh-hant': { title: '部落格 — SemanticLab', desc: 'SEO/GEO 實戰文章：語意集群、AI 內容產線、被 AI 引用的方法。', h1: '部落格', all: '全部' },
-  'zh-hans': { title: '博客 — SemanticLab', desc: 'SEO/GEO 实战文章：语义集群、AI 内容产线、被 AI 引用的方法。', h1: '博客', all: '全部' },
-  en: { title: 'Blog — SemanticLab', desc: 'Practical SEO/GEO articles: semantic clusters, AI content pipelines, getting cited by AI.', h1: 'Blog', all: 'All' },
+  'zh-hant': { title: '部落格 — GeoSeoToday', desc: 'SEO/GEO 實戰文章：語意集群、AI 內容產線、被 AI 引用的方法。', h1: '部落格', all: '全部' },
+  'zh-hans': { title: '博客 — GeoSeoToday', desc: 'SEO/GEO 实战文章：语义集群、AI 内容产线、被 AI 引用的方法。', h1: '博客', all: '全部' },
+  en: { title: 'Blog — GeoSeoToday', desc: 'Practical SEO/GEO articles: semantic clusters, AI content pipelines, getting cited by AI.', h1: 'Blog', all: 'All' },
 }[lang];
 
 const now = new Date();
@@ -52,7 +52,7 @@ const chips = Object.values(CLUSTER_STYLE).filter((c) => chipKeys.includes(c.key
       return (
         <a class="pcard" href={`/${lang}/blog/${slug}/`} data-c={c.key}>
           <div class="cover" style={`background:linear-gradient(135deg,${c.g1},${c.g2} 130%)`}>
-            <span class="cover-brand">SemanticLab</span>
+            <span class="cover-brand">GeoSeoToday</span>
             <span class="cover-title">{p.data.title}</span>
             <span class="cover-tag">{c.short}</span>
           </div>

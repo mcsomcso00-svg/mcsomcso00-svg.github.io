@@ -11,7 +11,7 @@ const blog = defineCollection({
     target_keyword: z.string().optional(),
     intent: z.enum(['informational', 'commercial']).default('informational'),
     cluster: z.string().optional(),
-    author: z.string().default('SemanticLab 語意實驗室'),
+    author: z.string().default('GeoSeoToday'),
     date_published: z.coerce.date(),
     date_updated: z.coerce.date().optional(),
     draft: z.boolean().default(false),
