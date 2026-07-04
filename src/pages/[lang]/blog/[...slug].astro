@@ -66,6 +66,47 @@ const BC = {
   'zh-hans': { home: '首页', blog: '博客' },
   en: { home: 'Home', blog: 'Blog' },
 }[lang];
+
+// 相關文章：同群集、日期已上線、排除自己，取 3 篇（提升 session 深度）
+const now = new Date();
+const related = (
+  await getCollection(
+    'blog',
+    (p) =>
+      p.id.startsWith(`${lang}/`) &&
+      !p.data.draft &&
+      p.data.date_published <= now &&
+      p.id !== post.id &&
+      p.data.cluster === post.data.cluster
+  )
+)
+  .sort((a, b) => b.data.date_published.valueOf() - a.data.date_published.valueOf())
+  .slice(0, 3);
+
+// 文末轉換卡文案
+const CTA = {
+  'zh-hant': {
+    title: '想知道你的網站離「被 AI 引用」還有多遠？',
+    desc: '30 秒免費檢測你的文章，或領取一份指名到頁面與段落的完整網站診斷報告。',
+    primary: '免費領取診斷報告',
+    secondary: '先用免費檢測器試試',
+    related: '延伸閱讀',
+  },
+  'zh-hans': {
+    title: '想知道你的网站离「被 AI 引用」还有多远？',
+    desc: '30 秒免费检测你的文章，或领取一份指名到页面与段落的完整网站诊断报告。',
+    primary: '免费领取诊断报告',
+    secondary: '先用免费检测器试试',
+    related: '延伸阅读',
+  },
+  en: {
+    title: 'How far is your site from being cited by AI?',
+    desc: 'Check any article free in 30 seconds, or get a full site diagnosis report pinned to exact pages and paragraphs.',
+    primary: 'Get my free audit report',
+    secondary: 'Try the free checker first',
+    related: 'Related articles',
+  },
+}[lang];
 const breadcrumbs = [
   { name: BC.home, url: `/${lang}/` },
   { name: BC.blog, url: `/${lang}/blog/` },
@@ -88,4 +129,45 @@ const breadcrumbs = [
     </p>
     <Content />
   </article>
+
+  <aside class="post-cta">
+    <p class="post-cta-title">{CTA.title}</p>
+    <p class="post-cta-desc">{CTA.desc}</p>
+    <div class="post-cta-btns">
+      <a class="post-cta-btn" href={`/${lang}/audit/`}>{CTA.primary}</a>
+      <a class="post-cta-link" href={`/${lang}/geo/`}>{CTA.secondary} →</a>
+    </div>
+  </aside>
+
+  {related.length > 0 && (
+    <section class="related">
+      <h2>{CTA.related}</h2>
+      <ul class="card-list">
+        {related.map((p) => (
+          <li>
+            <a href={`/${lang}/blog/${p.id.split('/').slice(1).join('/')}/`}>{p.data.title}</a>
+            <p>{p.data.description}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 </Base>
+
+<style>
+  .post-cta {
+    margin-top: 40px; padding: 24px 26px; border-radius: 14px;
+    background: linear-gradient(135deg, #1a2740, #171b22);
+    border: 1px solid #2f4a7a;
+  }
+  .post-cta-title { font-size: 18px; font-weight: 800; margin: 0 0 6px; }
+  .post-cta-desc { color: var(--dim); font-size: 14px; margin: 0 0 16px; }
+  .post-cta-btns { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .post-cta-btn {
+    background: var(--accent); color: #fff !important; text-decoration: none;
+    font-weight: 700; font-size: 15px; padding: 12px 22px; border-radius: 10px;
+  }
+  .post-cta-btn:hover { filter: brightness(1.1); }
+  .post-cta-link { font-size: 14px; }
+  .related h2 { margin-top: 36px; }
+</style>

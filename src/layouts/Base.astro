@@ -51,10 +51,10 @@ const breadcrumbSchema = breadcrumbs && breadcrumbs.length
     }
   : null;
 const allSchemas = [orgSchema, websiteSchema, ...(breadcrumbSchema ? [breadcrumbSchema] : []), ...schemas];
-const NAV: Record<string, { home: string; blog: string; geo: string }> = {
-  'zh-hant': { home: '首頁', blog: '部落格', geo: 'GEO 檢測' },
-  'zh-hans': { home: '首页', blog: '博客', geo: 'GEO 检测' },
-  en: { home: 'Home', blog: 'Blog', geo: 'GEO Checker' },
+const NAV: Record<string, { home: string; blog: string; geo: string; audit: string }> = {
+  'zh-hant': { home: '首頁', blog: '部落格', geo: 'GEO 檢測', audit: '免費診斷' },
+  'zh-hans': { home: '首页', blog: '博客', geo: 'GEO 检测', audit: '免费诊断' },
+  en: { home: 'Home', blog: 'Blog', geo: 'GEO Checker', audit: 'Free Audit' },
 };
 const nav = NAV[lang];
 ---
@@ -100,6 +100,7 @@ const nav = NAV[lang];
         <a href={`/${lang}/blog/`}>{nav.blog}</a>
         <a href={`/${lang}/geo/`}>{nav.geo}</a>
       </nav>
+      <a class="nav-cta" href={`/${lang}/audit/`}>{nav.audit}</a>
       <div class="lang-switch">
         {(['zh-hant', 'zh-hans', 'en'] as const).map((l) => (
           <a href={alternates?.[l] ?? `/${l}/`} class={l === lang ? 'active' : ''}>
@@ -110,7 +111,7 @@ const nav = NAV[lang];
     </header>
     <main><slot /></main>
     <footer class="site-footer">
-      <p>© 2026 SemanticLab · <a href={`/${lang}/blog/`}>{nav.blog}</a> · <a href={`/${lang}/geo/`}>{nav.geo}</a></p>
+      <p>© 2026 SemanticLab · <a href={`/${lang}/blog/`}>{nav.blog}</a> · <a href={`/${lang}/geo/`}>{nav.geo}</a> · <a href={`/${lang}/audit/`}>{nav.audit}</a></p>
     </footer>
   </body>
 </html>
@@ -134,6 +135,12 @@ const nav = NAV[lang];
   .site-header nav { display: flex; gap: 16px; flex: 1; }
   .site-header nav a { color: var(--dim); text-decoration: none; font-size: 14px; }
   .site-header nav a:hover { color: var(--txt); }
+  .nav-cta {
+    background: var(--accent); color: #fff !important; text-decoration: none;
+    font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 8px;
+    white-space: nowrap;
+  }
+  .nav-cta:hover { filter: brightness(1.1); }
   .lang-switch { display: flex; gap: 6px; }
   .lang-switch a {
     color: var(--dim); text-decoration: none; font-size: 12px;
