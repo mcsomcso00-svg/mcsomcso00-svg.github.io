@@ -81,8 +81,8 @@ const alternates = { 'zh-hant': '/zh-hant/', 'zh-hans': '/zh-hans/', en: '/en/' 
     display: inline-block; text-decoration: none; font-weight: 700; font-size: 15px;
     padding: 13px 24px; border-radius: 10px;
   }
-  .hero-btn.primary { background: var(--accent); color: #fff; }
-  .hero-btn.primary:hover { filter: brightness(1.1); }
+  .hero-btn.primary { background: var(--cta); color: var(--cta-ink); box-shadow: var(--cta-glow); transition: filter .2s; }
+  .hero-btn.primary:hover { filter: brightness(1.08); }
   .hero-btn.ghost { border: 1px solid var(--line); color: var(--txt); background: var(--panel); }
   .hero-btn.ghost:hover { border-color: var(--accent); }
 </style>

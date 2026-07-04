@@ -195,14 +195,15 @@ const schema = {
   .cta-col li { margin: 6px 0; font-size: 13.5px; line-height: 1.55; }
   .cta-btn {
     display: inline-block;
-    background: var(--accent);
-    color: #fff !important;
+    background: var(--cta);
+    color: var(--cta-ink) !important;
     text-decoration: none;
     font-weight: 700;
     font-size: 16px;
     padding: 13px 26px;
     border-radius: 10px;
   }
-  .cta-btn:hover { filter: brightness(1.1); }
+  .cta-btn { box-shadow: var(--cta-glow); transition: filter .2s; }
+  .cta-btn:hover { filter: brightness(1.08); }
   .cta-note { color: var(--dim); font-size: 12.5px; margin-top: 12px; margin-bottom: 0; }
 </style>
