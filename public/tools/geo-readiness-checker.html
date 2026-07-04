@@ -97,6 +97,7 @@ const I18N = {
     btn:"檢測", scoreLbl:"/ 100 · GEO 就緒度",
     placeholder:"把整篇文章貼進來…",
     empty:"請先貼上文章內容。",
+    urlWarn:"你貼的是網址。本工具無法抓取網頁（瀏覽器安全限制），請改貼「文章內文」：打開該頁面 → 全選文章文字（Ctrl+A、Ctrl+C）→ 貼到這裡。",
     foot:"評分為<b>啟發式估算</b>，反映 AI 引用友善度的訊號強度，非官方保證。方法：答案優先段落、可引用數據、結構、FAQ、清單/表格、深度、實體、來源、時效。",
     sigs:{
       answer:["答案優先開頭","開頭給了一段自包含的清楚答案（AI 最愛直接抓）。","開頭沒有自包含答案；把核心結論濃縮成 40–80 字放最前面。"],
@@ -118,6 +119,7 @@ const I18N = {
     btn:"检测", scoreLbl:"/ 100 · GEO 就绪度",
     placeholder:"把整篇文章粘贴进来…",
     empty:"请先粘贴文章内容。",
+    urlWarn:"你粘贴的是网址。本工具无法抓取网页（浏览器安全限制），请改贴「文章正文」：打开该页面 → 全选文章文字（Ctrl+A、Ctrl+C）→ 粘贴到这里。",
     foot:"评分为<b>启发式估算</b>，反映 AI 引用友好度的信号强度，非官方保证。维度：答案优先段落、可引用数据、结构、FAQ、清单/表格、深度、实体、来源、时效。",
     sigs:{
       answer:["答案优先开头","开头给出自包含的清晰答案（AI 最爱直接抓）。","开头没有自包含答案；把核心结论浓缩成 40–80 字放最前面。"],
@@ -139,6 +141,7 @@ const I18N = {
     btn:"Check", scoreLbl:"/ 100 · GEO readiness",
     placeholder:"Paste the full article here…",
     empty:"Please paste article content first.",
+    urlWarn:"That looks like a URL. This tool can't fetch web pages (browser security limits) — please paste the ARTICLE TEXT instead: open the page, select the article (Ctrl+A, Ctrl+C) and paste it here.",
     foot:"Score is a <b>heuristic estimate</b> of AI-citation friendliness signals, not an official guarantee. Signals: answer-first block, quotable data, structure, FAQ, lists/tables, depth, entity, sources, freshness.",
     sigs:{
       answer:["Answer-first opening","Opens with a self-contained, clear answer (AI loves to extract this).","No self-contained answer up top; put a 40–80 word conclusion first."],
@@ -231,6 +234,9 @@ function run(){
   const brand=document.getElementById("brand").value.trim();
   const t=I18N[LANG];
   if(!raw){ alert(t.empty); return; }
+  // 偵測「貼網址而非內文」：整段只有網址，或含網址且內文極短
+  const urlOnly = /^https?:\/\/\S+$/.test(raw) || (/(^|\s)https?:\/\//.test(raw) && ((raw.match(/[一-鿿]/g)||[]).length + (raw.match(/[A-Za-z]{2,}/g)||[]).length) < 60);
+  if(urlOnly){ alert(t.urlWarn); return; }
   const r=analyze(raw, brand);
 
   const sc=document.getElementById("scoreCard");
