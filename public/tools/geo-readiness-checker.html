@@ -32,6 +32,11 @@
   .btn{background:var(--accent);color:#fff;border:none;padding:12px 22px;border-radius:10px;
     font-size:15px;font-weight:600;cursor:pointer;margin-top:14px}
   .btn:hover{filter:brightness(1.08)}
+  .btn2{background:var(--panel2);color:var(--dim);border:1px solid var(--line);margin-left:8px}
+  .btn2:hover{color:var(--txt);filter:none;border-color:var(--dim)}
+  .hint{color:var(--dim);font-size:12px;line-height:1.6;background:var(--panel2);
+    border:1px dashed var(--line);border-radius:8px;padding:8px 12px;margin:0 0 8px}
+  .hint b{color:var(--txt)}
   .score-wrap{display:none;text-align:center;padding:24px 18px}
   .score-num{font-size:56px;font-weight:800;line-height:1}
   .score-label{color:var(--dim);font-size:13px;margin-top:6px}
@@ -65,6 +70,7 @@
 
   <div class="card">
     <label id="t_lbl_article">文章內容（純文字或 HTML 皆可）</label>
+    <p class="hint" id="t_hint"></p>
     <textarea id="article" placeholder=""></textarea>
     <div class="row">
       <div>
@@ -72,7 +78,7 @@
         <input id="brand" type="text" placeholder="">
       </div>
     </div>
-    <button class="btn" id="t_btn" onclick="run()">檢測</button>
+    <button class="btn" id="t_btn" onclick="run()">檢測</button><button class="btn btn2" id="t_reset" onclick="resetAll()">重設</button>
   </div>
 
   <div class="card score-wrap" id="scoreCard">
@@ -97,6 +103,8 @@ const I18N = {
     btn:"檢測", scoreLbl:"/ 100 · GEO 就緒度",
     placeholder:"把整篇文章貼進來…",
     empty:"請先貼上文章內容。",
+    hint:"<b>怎麼複製文章？</b>打開你的文章頁面 → 從標題按住滑鼠拖曳選到文末（或 Ctrl+A 全選）→ Ctrl+C 複製 → 回到這裡 Ctrl+V 貼上。⚠️ 只貼網址無效，工具無法抓取網頁。",
+    reset:"重設",
     urlWarn:"你貼的是網址。本工具無法抓取網頁（瀏覽器安全限制），請改貼「文章內文」：打開該頁面 → 全選文章文字（Ctrl+A、Ctrl+C）→ 貼到這裡。",
     foot:"評分為<b>啟發式估算</b>，反映 AI 引用友善度的訊號強度，非官方保證。方法：答案優先段落、可引用數據、結構、FAQ、清單/表格、深度、實體、來源、時效。",
     sigs:{
@@ -119,6 +127,8 @@ const I18N = {
     btn:"检测", scoreLbl:"/ 100 · GEO 就绪度",
     placeholder:"把整篇文章粘贴进来…",
     empty:"请先粘贴文章内容。",
+    hint:"<b>怎么复制文章？</b>打开你的文章页面 → 从标题按住鼠标拖选到文末（或 Ctrl+A 全选）→ Ctrl+C 复制 → 回到这里 Ctrl+V 粘贴。⚠️ 只贴网址无效，工具无法抓取网页。",
+    reset:"重置",
     urlWarn:"你粘贴的是网址。本工具无法抓取网页（浏览器安全限制），请改贴「文章正文」：打开该页面 → 全选文章文字（Ctrl+A、Ctrl+C）→ 粘贴到这里。",
     foot:"评分为<b>启发式估算</b>，反映 AI 引用友好度的信号强度，非官方保证。维度：答案优先段落、可引用数据、结构、FAQ、清单/表格、深度、实体、来源、时效。",
     sigs:{
@@ -141,6 +151,8 @@ const I18N = {
     btn:"Check", scoreLbl:"/ 100 · GEO readiness",
     placeholder:"Paste the full article here…",
     empty:"Please paste article content first.",
+    hint:"<b>How to copy the article:</b> open your article page → click-drag from the title to the end (or Ctrl+A) → Ctrl+C → come back and Ctrl+V here. ⚠️ Pasting just a URL won't work — this tool can't fetch web pages.",
+    reset:"Reset",
     urlWarn:"That looks like a URL. This tool can't fetch web pages (browser security limits) — please paste the ARTICLE TEXT instead: open the page, select the article (Ctrl+A, Ctrl+C) and paste it here.",
     foot:"Score is a <b>heuristic estimate</b> of AI-citation friendliness signals, not an official guarantee. Signals: answer-first block, quotable data, structure, FAQ, lists/tables, depth, entity, sources, freshness.",
     sigs:{
@@ -178,8 +190,18 @@ function applyLang(){
   document.getElementById("scoreLbl").textContent=t.scoreLbl;
   document.getElementById("article").placeholder=t.placeholder;
   document.getElementById("t_foot").innerHTML=t.foot;
+  document.getElementById("t_hint").innerHTML=t.hint;
+  document.getElementById("t_reset").textContent=t.reset;
 }
 applyLang();
+
+function resetAll(){
+  document.getElementById("article").value="";
+  document.getElementById("brand").value="";
+  document.getElementById("scoreCard").style.display="none";
+  document.getElementById("sigCard").style.display="none";
+  document.getElementById("article").focus();
+}
 
 /* ---------- analysis ---------- */
 function analyze(raw, brand){
